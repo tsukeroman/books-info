@@ -14,17 +14,12 @@
             <%=title%>
             </h1>
             <p>Welcome to the best book review app.</p>
-            <form>
-                <input type="text" placeholder="Write book title here..." />
-                <button type="submit">Search</button>
-            </form>
             <div class="review">
-                <p><b>The review:</b></p>
+                <p><b><%=id%></b></p>
                 <%=review%>
-                <br />
-                <br />
-                <a href="#">Click here to read more about this book</a>
             </div>
+            <br />
+            <a href='/'><button>Return to main</button></a>
         </div>
         <div class="column right">
             <div class="last-ten">

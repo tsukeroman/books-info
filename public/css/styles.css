@@ -1,0 +1,39 @@
+.column {
+    padding-top: 40px;
+    float: left;
+}
+
+/* Left and right column */
+.column.left {
+    padding-left: 40px;
+    width: 75%;
+}
+
+/* Middle column */
+.column.right {
+    width: 25%;
+}
+
+.review {
+    margin-top: 50px;
+    padding-right: 60px;
+}
+
+.last-ten {
+    
+}
+
+.most-three {
+
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column.right {
+    display: none;
+  }
+
+  .column.left {
+      width: 100%;
+  }
+}
