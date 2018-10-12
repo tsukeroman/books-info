@@ -13,17 +13,20 @@
             <h1>
             <%=title%>
             </h1>
-            <p>Welcome to the best book review app.</p>
-            <form>
-                <input type="text" placeholder="Write book title here..." />
-                <button type="submit">Search</button>
+            <p>The best book review app.</p>
+            <br />
+            <form action="/" method="post">
+                <input name="bookName" class="input" type="text" placeholder="Write book's name here" required />
+                <button type="submit">View</button>
             </form>
             <div class="review">
-                <p><b>The review:</b></p>
+                <p class='name'><b><%=name%></b></p>
                 <%=review%>
                 <br />
                 <br />
-                <a href="#">Click here to read more about this book</a>
+                <%if (name != '') { %>
+                    <a href='/<%=name%>'>Click here to read more about this book</a>
+                <% } %>                
             </div>
         </div>
         <div class="column right">

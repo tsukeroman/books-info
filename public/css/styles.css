@@ -19,6 +19,14 @@
     padding-right: 60px;
 }
 
+.input {
+    width: 250px;
+}
+
+.name {
+    text-transform: capitalize; 
+}
+
 .last-ten {
     
 }
