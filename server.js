@@ -30,35 +30,45 @@ connection.connect((err) => {
   debug('Connected!');
 });
 
-const SELECT_ALL_SEARCHES_QUERY = 'SELECT * FROM searches';
+const SELECT_ALL_SEARCHES_QUERY = 'SELECT * FROM searches ORDER BY insertTime DESC';
 
 let searches = [];
 
-connection.query(SELECT_ALL_SEARCHES_QUERY, (err, results) => {
-  if (err) {
-    return err;
-  }
-  searches = results.map(element => element.search);
-  return results;
-});
-
 app.get('/', (req, res) => {
-  const last10 = searches.slice(0, 10);
-  const most3 = searches.slice(0, 3);
-  const review = '';
-  const name = '';
-  res.render('index', {
-    title: 'Books-Info', name, review, last10, most3
+  connection.query(SELECT_ALL_SEARCHES_QUERY, (err, results) => {
+    if (err) {
+      debug(err);
+      return err;
+    }
+    searches = results.map(element => element.search);
+    const last10 = searches.slice(0, 10);
+    const most3 = searches.slice(0, 3);
+    const review = '';
+    const name = '';
+    res.render('index', {
+      title: 'Books-Info', name, review, last10, most3
+    });
+    return results;
   });
 });
 
 app.post('/', (req, res) => {
-  const last10 = searches.slice(0, 10);
-  const most3 = searches.slice(0, 3);
   const name = req.body.bookName;
-  const review = "The Jungle Book: Mowgli's Adventures adapts Rudyard Kipling's timeless tale of a young boy lost in the jungles of India for young children. This delightfully written and illustrated book focuses on the magic of the jungle and the one-of-a-kind characters and fantastical situations that Mowgli finds himself in.";
-  res.render('index', {
-    title: 'Books-Info', name, review, last10, most3
+  const insertTime = new Date().getTime();
+  const INSERT_SEARCH_QUERY = `INSERT INTO searches (search, insertTime) VALUES('${name}', ${insertTime})`;
+  connection.query(INSERT_SEARCH_QUERY, (err, results) => {
+    if (err) {
+      debug(err);
+      return err;
+    }
+    searches = [name, ...searches];
+    const last10 = searches.slice(0, 10);
+    const most3 = searches.slice(0, 3);
+    const review = "The Jungle Book: Mowgli's Adventures adapts Rudyard Kipling's timeless tale of a young boy lost in the jungles of India for young children. This delightfully written and illustrated book focuses on the magic of the jungle and the one-of-a-kind characters and fantastical situations that Mowgli finds himself in.";
+    res.render('index', {
+      title: 'Books-Info', name, review, last10, most3
+    });
+    return results;
   });
 });
 

@@ -24,15 +24,13 @@
 }
 
 .name {
-    text-transform: capitalize; 
+    text-transform: capitalize;
+    font-weight: bold;
 }
 
-.last-ten {
-    
-}
-
-.most-three {
-
+.search {
+    text-transform: capitalize;
+    padding-left:20px;
 }
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */

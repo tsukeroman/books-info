@@ -32,17 +32,18 @@
         <div class="column right">
             <div class="last-ten">
                 <ol>
-                    <b>10 Last Searches</b>
+                    <h5>10 Last Searches</h5>
                     <%for(let i=0; i<last10.length; i++){%>
-                        <li style="padding-left:20px;"><%=last10[i]%></li>
+                        <li class="search"><a href='/<%=last10[i]%>'><%=last10[i]%><a></li>
                     <%}%>
                 </ol>
             </div>
+            <br />
             <div class="most-three">
                 <ol>
-                    <b class="tile3">3 Most Searched</b>
+                    <h5>3 Most Searched</h5>
                     <%for(let i=0; i<most3.length; i++){%>
-                        <li style="padding-left:20px;"><%=most3[i]%></li>
+                        <li class="search"><a href='/<%=most3[i]%>'><%=most3[i]%></a></li>
                     <%}%>
                 </ol>
             </div>
