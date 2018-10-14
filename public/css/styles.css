@@ -1,3 +1,8 @@
+.main {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
 .column {
     padding-top: 40px;
     float: left;
@@ -5,7 +10,6 @@
 
 /* Left and right column */
 .column.left {
-    padding-left: 40px;
     width: 75%;
 }
 
@@ -21,6 +25,9 @@
 
 .input {
     width: 250px;
+    padding-left: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 .name {
@@ -31,6 +38,25 @@
 .search {
     text-transform: capitalize;
     padding-left:20px;
+}
+
+.more {
+    margin-bottom: 50px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.last-ten {
+    
+}
+
+.most-three {
+
+}
+
+.error {
+    padding-top: 30px;
+    font-size: 20px;
 }
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */

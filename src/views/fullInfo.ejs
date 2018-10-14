@@ -5,43 +5,53 @@
         <meta charset="utf-8">
 		<title><%=title%></title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/styles.css" rel="stylesheet">
+		<link href="/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/styles.css" rel="stylesheet">
     </head>
     <body>
-        <div class="column left">
-            <h1>
-            <%=title%>
-            </h1>
-            <p>The best book review app.</p>
-            <div class="review">
-                <p class='name'><%=name%></p>
-                <%=review%>
+        <div class="main">
+            <div class="column left">
+                <h1>
+                <a href="/" style="text-decoration: none; color: black;"><%=title%></a>
+                </h1>
+                <p>The best book review app.</p>
+                <div class="review">
+                    <p class='name'><%=name%></p>
+                    <div>
+                        <img src=<%=img%> alt=<%=name%>>
+                    </div>
+                    <br />
+                    <div>
+                        <%-review%>
+                    </div>
+                </div>
+                <br />
+                <div class="more">
+                    <a href='/'>Return to main</a>
+                </div>
             </div>
-            <br />
-            <a href='/'><button>Return to main</button></a>
-        </div>
-        <div class="column right">
-            <div class="last-ten">
-                <ol>
-                    <h5>10 Last Searches</h5>
-                    <%for(let i=0; i<last10.length; i++){%>
-                        <li class="search"><a href='/<%=last10[i]%>'><%=last10[i]%><a></li>
-                    <%}%>
-                </ol>
-            </div>
-            <br />
-            <div class="most-three">
-                <ol>
-                    <h5>3 Most Searched</h5>
-                    <%for(let i=0; i<most3.length; i++){%>
-                        <li class="search"><a href='/<%=most3[i]%>'><%=most3[i]%></a></li>
-                    <%}%>
-                </ol>
+            <div class="column right">
+                <div class="last-ten">
+                    <ol>
+                        <h5>10 Last Searches</h5>
+                        <%for(let i=0; i<last10.length; i++){%>
+                            <li class="search"><a href='/books/<%=last10[i]%>'><%=last10[i]%><a></li>
+                        <%}%>
+                    </ol>
+                </div>
+                <br />
+                <div class="most-three">
+                    <ol>
+                        <h5>3 Most Searched</h5>
+                        <%for(let i=0; i<most3.length; i++){%>
+                            <li class="search"><a href='/books/<%=most3[i]%>'><%=most3[i]%></a></li>
+                        <%}%>
+                    </ol>
+                </div>
             </div>
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-		<script src="js/bootstrap.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
     </body>
 </html>

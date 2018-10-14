@@ -20,16 +20,9 @@
                     <input name="bookName" class="input" type="text" placeholder="Write book's name here" required />
                     <button type="submit">View</button>
                 </form>
-                <div class="review">
-                    <p class='name'><b><%=name%></b></p>
-                    <%-review%>
-                    <br />
-                    <br />
-                    <%if (name != '') { %>
-                        <div class="more">
-                            <a href='/books/<%=name%>'>Click here to view more details about this book</a>
-                        </div>
-                    <% } %>                
+                <div class="error">
+                    There is no review for <%=name%>. <br />
+                    Check if you spelled it right, or try an other name.          
                 </div>
             </div>
             <div class="column right">
