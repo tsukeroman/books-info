@@ -10,11 +10,13 @@
     </head>
     <body>
         <div class="main">
-            <div class="column left">
+            <header class="header">
                 <h1>
-                <a href="/" style="text-decoration: none; color: black;"><%=title%></a>
+                <a href="/" style="text-decoration: none; color: #f4f5ff;"><%=title%></a>
                 </h1>
-                <p>The best book review app.</p>
+                <p style="color: #f4f5ff;">The best book review app.</p>
+            </header>
+            <div class="column left">
                 <div class="review">
                     <p class='name'><%=name%></p>
                     <div>
@@ -27,22 +29,21 @@
                 </div>
                 <br />
                 <div class="more">
-                    <a href='/'>Return to main</a>
+                    <a href='/'>Back to the main page</a>
                 </div>
             </div>
             <div class="column right">
                 <div class="last-ten">
                     <ol>
-                        <h5>10 Last Searches</h5>
+                        <h5 style="padding-left:30px; padding-bottom: 5px;">10 Last Searches</h5>
                         <%for(let i=0; i<last10.length; i++){%>
                             <li class="search"><a href='/books/<%=last10[i]%>'><%=last10[i]%><a></li>
                         <%}%>
                     </ol>
                 </div>
-                <br />
                 <div class="most-three">
                     <ol>
-                        <h5>3 Most Searched</h5>
+                        <h5 style="padding-left:30px; padding-bottom: 5px;">3 Most Searched</h5>
                         <%for(let i=0; i<most3.length; i++){%>
                             <li class="search"><a href='/books/<%=most3[i]%>'><%=most3[i]%></a></li>
                         <%}%>

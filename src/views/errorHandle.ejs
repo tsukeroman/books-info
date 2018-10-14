@@ -10,34 +10,32 @@
     </head>
     <body>
         <div class="main">
-            <div class="column left">
+            <header class="header">
                 <h1>
-                <a href="/" style="text-decoration: none; color: black;"><%=title%></a>
+                <a href="/" style="text-decoration: none; color: #f4f5ff;"><%=title%></a>
                 </h1>
-                <p>The best book review app.</p>
+                <p style="color: #f4f5ff;">The best book review app.</p>
+            </header>
+            <div class="column left">
                 <br />
-                <form action="/" method="post">
-                    <input name="bookName" class="input" type="text" placeholder="Write book's name here" required />
-                    <button type="submit">View</button>
-                </form>
                 <div class="error">
-                    There is no review for <%=name%>. <br />
-                    Check if you spelled it right, or try an other name.          
+                    <%=errorMSG%>  
+                    <br /><br />
+                    <a href="/"><b>Back to the main page</b></a>          
                 </div>
             </div>
             <div class="column right">
                 <div class="last-ten">
                     <ol>
-                        <h5>10 Last Searches</h5>
+                        <h5 style="padding-left:30px; padding-bottom: 5px;">10 Last Searches</h5>
                         <%for(let i=0; i<last10.length; i++){%>
                             <li class="search"><a href='/books/<%=last10[i]%>'><%=last10[i]%><a></li>
                         <%}%>
                     </ol>
                 </div>
-                <br />
                 <div class="most-three">
                     <ol>
-                        <h5>3 Most Searched</h5>
+                        <h5 style="padding-left:30px; padding-bottom: 5px;">3 Most Searched</h5>
                         <%for(let i=0; i<most3.length; i++){%>
                             <li class="search"><a href='/books/<%=most3[i]%>'><%=most3[i]%></a></li>
                         <%}%>

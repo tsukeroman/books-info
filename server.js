@@ -51,7 +51,6 @@ function getBookByTitle(title) {
       })
       .catch((error) => {
         process.on('unhandledRejection', (up) => { throw up; });
-
         // reject(error);
         debug(error.info);
         resolve(null);
@@ -63,6 +62,20 @@ function largerImage(url) {
   const prefixLen = 'https://images.gr-assets.com/books/1474154022'.length;
   const res = `${url.substring(0, prefixLen)}l${url.substring(prefixLen + 1)}`;
   return res;
+}
+
+// To prevent any kind of "sql-injection" alike attacks, I block input with special
+// characters, e.g. the server would not proceeded any harmful inputs to the
+// database and cause troubles
+function validateInput(str) {
+  const Restricted = '"\'`*+=/|';
+  let i;
+  for (i = 0; i < Restricted.length; i += 1) {
+    if (str.indexOf(Restricted[i]) !== -1) {
+      return false;
+    }
+  }
+  return true;
 }
 
 app.get('/', (req, res) => {
@@ -83,26 +96,36 @@ app.get('/', (req, res) => {
   });
 });
 
-app.post('/', (req, res) => {
+app.post('/', async (req, res) => {
   let name = req.body.bookName;
-  const insertTime = new Date().getTime();
-  const INSERT_SEARCH_QUERY = `INSERT INTO searches (search, insertTime) VALUES('${name}', ${insertTime})`;
-  connection.query(INSERT_SEARCH_QUERY, async (err, results) => {
-    if (err) {
-      debug(err);
-      return err;
-    }
-    searches = [name, ...searches];
-    const last10 = searches.slice(0, 10);
-    const most3 = searches.slice(0, 3);
+  let last10 = searches.slice(0, 10);
+  let most3 = searches.slice(0, 3);
+  if (validateInput(name) === false) {
+    const errorMSG = `Sorry, there are no results for "${name}".`;
+    res.render('errorHandle', {
+      title: 'Books-Info', errorMSG, last10, most3
+    });
+  } else {
     const book = await getBookByTitle(name);
-    debug(book);
     let review;
     if (book === null) {
+      const errorMSG = `Sorry, there are no results for "${name}".`;
       res.render('errorHandle', {
-        title: 'Books-Info', name, last10, most3
+        title: 'Books-Info', errorMSG, last10, most3
       });
     } else {
+      const insertTime = new Date().getTime();
+      const INSERT_SEARCH_QUERY = `INSERT INTO searches (search, insertTime) VALUES('${book.title}', ${insertTime})`;
+      await connection.query(INSERT_SEARCH_QUERY, (err, results) => {
+        if (err) {
+          debug(err);
+          return err;
+        }
+        return results;
+      });
+      searches = [book.title, ...searches];
+      last10 = searches.slice(0, 10);
+      most3 = searches.slice(0, 3);
       review = book.description;
       if (review === '') {
         review = 'There is no available description for this book.';
@@ -112,8 +135,7 @@ app.post('/', (req, res) => {
         title: 'Books-Info', name, review, last10, most3
       });
     }
-    return results;
-  });
+  }
 });
 
 app.get('/books/:name', async (req, res) => {
@@ -124,8 +146,9 @@ app.get('/books/:name', async (req, res) => {
   let review;
   let img;
   if (book === null) {
+    const errorMSG = `Sorry, there are no results for "${name}".`;
     res.render('errorHandle', {
-      title: 'Books-Info', name, last10, most3
+      title: 'Books-Info', errorMSG, last10, most3
     });
   } else {
     review = book.description;
@@ -134,11 +157,20 @@ app.get('/books/:name', async (req, res) => {
     }
     name = book.title;
     img = largerImage(book.image_url);
-    debug(img);
     res.render('fullInfo', {
       title: 'Books-Info', review, name, img, last10, most3
     });
   }
+});
+
+app.get('*', (req, res) => {
+  // const name = req.url;
+  const last10 = searches.slice(0, 10);
+  const most3 = searches.slice(0, 3);
+  const errorMSG = 'The page you are trying to reach does not exist.';
+  res.render('errorHandle', {
+    title: 'Books-Info', errorMSG, last10, most3
+  });
 });
 
 app.listen(port, () => {
