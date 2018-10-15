@@ -47,7 +47,7 @@ function getBookByTitle(title) {
       })
       .catch((error) => {
         // reject(error);
-        process.on('unhandledRejection', (up) => { throw up; });
+        // process.on('unhandledRejection', (up) => { throw up; });
         debug(error.info);
         resolve(null);
       });
@@ -168,6 +168,21 @@ app.get('/books/:name', async (req, res) => {
       title: 'Books-Info', errorMSG, last10, most3
     });
   } else {
+    debug(book.authors);
+    let author;
+    if (book.authors.author.constructor === Array) {
+      author = book.authors.author[0].name;
+    } else {
+      author = book.authors.author.name;
+    }
+    const { isbn } = book;
+    const count = book.work.books_count._;
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const month = book.work.original_publication_month._;
+    const year = book.work.original_publication_year._;
+    const day = book.work.original_publication_day._;
+    const date = `${months[month - 1]} ${day}th ${year}`;
+    debug(date);
     review = book.description;
     if (review === '') {
       review = 'There is no available description for this book.';
@@ -175,7 +190,7 @@ app.get('/books/:name', async (req, res) => {
     name = book.title;
     img = largerImage(book.image_url);
     res.render('fullInfo', {
-      title: 'Books-Info', review, name, img, last10, most3
+      title: 'Books-Info', author, isbn, count, date, review, name, img, last10, most3
     });
   }
 });

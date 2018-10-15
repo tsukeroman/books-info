@@ -18,7 +18,7 @@
             </div>
             <div class="column left">
                 <br />
-                <form action="/" method="post">
+                <form action="/" method="post" class="form">
                     <input name="bookName" class="input" type="text" placeholder="Write book's name here" required />
                     <button type="submit">View</button>
                 </form>
@@ -52,7 +52,12 @@
                     </ol>
                 </div>
             </div>
-            <div class="footer"></div>
+            <div class="footer">
+                <p style="color: #f4f5ff;">
+                This is a node.js app, that uses a template engine with EJS and is connected to a MySQL database.
+                The app gets the information about the books from goodreads.com/api.
+                </p>
+            </div>
         </div>
         
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
