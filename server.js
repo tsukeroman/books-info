@@ -33,10 +33,6 @@ connection.connect((err) => {
   debug('Connected!');
 });
 
-const SELECT_ALL_SEARCHES_QUERY = 'SELECT * FROM searches ORDER BY insertTime DESC';
-
-let searches = [];
-
 function getBookByTitle(title) {
   return new Promise((resolve, reject) => {
     axios.get(`https://www.goodreads.com/book/title.xml?&key=9hoCiTrsCBET1EZFyF6F6g&title=${title}`)
@@ -50,8 +46,8 @@ function getBookByTitle(title) {
         });
       })
       .catch((error) => {
-        process.on('unhandledRejection', (up) => { throw up; });
         // reject(error);
+        process.on('unhandledRejection', (up) => { throw up; });
         debug(error.info);
         resolve(null);
       });
@@ -64,9 +60,11 @@ function largerImage(url) {
   return res;
 }
 
-// To prevent any kind of "sql-injection" alike attacks, I block input with special
-// characters, e.g. the server would not proceeded any harmful inputs to the
-// database and cause troubles
+/*
+To prevent any kind of "sql-injection" alike attacks, I block input with special
+characters, e.g. the server would not proceeded any harmful inputs to the
+database and cause troubles.
+*/
 function validateInput(str) {
   const Restricted = '"\'`*+=/|';
   let i;
@@ -78,15 +76,34 @@ function validateInput(str) {
   return true;
 }
 
+function mostSearched(lastSearches, mostNum) {
+  const dict = {};
+  for (let i = 0; i < lastSearches.length; i += 1) {
+    if (lastSearches[i] in dict) {
+      dict[lastSearches[i]] += 1;
+    } else {
+      dict[lastSearches[i]] = 1;
+    }
+  }
+  const items = Object.keys(dict).map(key => [key, dict[key]]);
+  items.sort((first, second) => second[1] - first[1]);
+  const results = items.map(val => val[0]);
+  return results.slice(0, mostNum);
+}
+
+const SELECT_200_LAST_SEARCHES_QUERY = 'SELECT * FROM searches ORDER BY insertTime DESC LIMIT 200';
+
+let searches = [];
+
 app.get('/', (req, res) => {
-  connection.query(SELECT_ALL_SEARCHES_QUERY, (err, results) => {
+  connection.query(SELECT_200_LAST_SEARCHES_QUERY, (err, results) => {
     if (err) {
       debug(err);
       return err;
     }
     searches = results.map(element => element.search);
     const last10 = searches.slice(0, 10);
-    const most3 = searches.slice(0, 3);
+    const most3 = mostSearched(searches, 3);
     const review = '';
     const name = '';
     res.render('index', {
@@ -99,7 +116,7 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
   let name = req.body.bookName;
   let last10 = searches.slice(0, 10);
-  let most3 = searches.slice(0, 3);
+  let most3 = mostSearched(searches, 3);
   if (validateInput(name) === false) {
     const errorMSG = `Sorry, there are no results for "${name}".`;
     res.render('errorHandle', {
@@ -125,7 +142,7 @@ app.post('/', async (req, res) => {
       });
       searches = [book.title, ...searches];
       last10 = searches.slice(0, 10);
-      most3 = searches.slice(0, 3);
+      most3 = mostSearched(searches, 3);
       review = book.description;
       if (review === '') {
         review = 'There is no available description for this book.';
@@ -141,7 +158,7 @@ app.post('/', async (req, res) => {
 app.get('/books/:name', async (req, res) => {
   let { name } = req.params;
   const last10 = searches.slice(0, 10);
-  const most3 = searches.slice(0, 3);
+  const most3 = mostSearched(searches, 3);
   const book = await getBookByTitle(name);
   let review;
   let img;
@@ -166,7 +183,7 @@ app.get('/books/:name', async (req, res) => {
 app.get('*', (req, res) => {
   // const name = req.url;
   const last10 = searches.slice(0, 10);
-  const most3 = searches.slice(0, 3);
+  const most3 = mostSearched(searches, 3);
   const errorMSG = 'The page you are trying to reach does not exist.';
   res.render('errorHandle', {
     title: 'Books-Info', errorMSG, last10, most3
