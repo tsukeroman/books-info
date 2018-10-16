@@ -1,3 +1,8 @@
+/*
+This file is the app's server. Here we initialize our Express app,
+connect to the database and fetch data from goodreads' API.
+*/
+
 const express = require('express');
 const debug = require('debug')('app');
 const path = require('path');
@@ -33,6 +38,11 @@ connection.connect((err) => {
   debug('Connected!');
 });
 
+/*
+This function fetches the book's object with all the information that we need about
+the book from goodreads API, by looking for the book with the closest name to the
+passed value.
+*/
 function getBookByTitle(title) {
   return new Promise((resolve, reject) => {
     axios.get(`https://www.goodreads.com/book/title.xml?&key=9hoCiTrsCBET1EZFyF6F6g&title=${title}`)
@@ -54,6 +64,11 @@ function getBookByTitle(title) {
   });
 }
 
+/*
+This function gets an image url and returns the url's of the enlarged version
+of the image. We need to use it, since there are only urls of the small and the
+medium size versions in the book object fetched from the API.
+*/
 function largerImage(url) {
   const prefixLen = 'https://images.gr-assets.com/books/1474154022'.length;
   const res = `${url.substring(0, prefixLen)}l${url.substring(prefixLen + 1)}`;
@@ -76,6 +91,10 @@ function validateInput(str) {
   return true;
 }
 
+/*
+This function analyzes an array of searches, and returns the 'mostNum' (number
+that is passed as an argument) most searched searches.
+*/
 function mostSearched(lastSearches, mostNum) {
   const dict = {};
   for (let i = 0; i < lastSearches.length; i += 1) {
@@ -93,8 +112,26 @@ function mostSearched(lastSearches, mostNum) {
 
 const SELECT_200_LAST_SEARCHES_QUERY = 'SELECT * FROM searches ORDER BY insertTime DESC LIMIT 200';
 
+// In this array we are going to maintain the searches that we'll get from the database.
 let searches = [];
 
+/*
+This query runs when the server loads for the first time in order to load
+the searches from the database.
+*/
+connection.query(SELECT_200_LAST_SEARCHES_QUERY, (err, results) => {
+  if (err) {
+    debug(err);
+    return err;
+  }
+  searches = results.map(element => element.search);
+  return searches;
+});
+
+/*
+This endpoint is responsible for fetching the last searches from the database,
+and for serving to the user the main page of the app.
+*/
 app.get('/', (req, res) => {
   connection.query(SELECT_200_LAST_SEARCHES_QUERY, (err, results) => {
     if (err) {
@@ -113,6 +150,12 @@ app.get('/', (req, res) => {
   });
 });
 
+/*
+This endpoint is responsible for handling user's search, by fetching book's info
+from the goodreads API, and serving to the user book's description and a link
+to a page with more details about the book. Also, after each search it inserts
+the name of the book to the database.
+*/
 app.post('/', async (req, res) => {
   let name = req.body.bookName;
   let last10 = searches.slice(0, 10);
@@ -155,6 +198,10 @@ app.post('/', async (req, res) => {
   }
 });
 
+/*
+This endpoint is responsible for serving the user an info page about a specific
+book, including it's image, author's name, ISBN, publish date and a description.
+*/
 app.get('/books/:name', async (req, res) => {
   let { name } = req.params;
   const last10 = searches.slice(0, 10);
@@ -168,7 +215,6 @@ app.get('/books/:name', async (req, res) => {
       title: 'Books-Info', errorMSG, last10, most3
     });
   } else {
-    debug(book.authors);
     let author;
     if (book.authors.author.constructor === Array) {
       author = book.authors.author[0].name;
@@ -176,13 +222,19 @@ app.get('/books/:name', async (req, res) => {
       author = book.authors.author.name;
     }
     const { isbn } = book;
-    const count = book.work.books_count._;
+    const pages = book.num_pages;
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const month = book.work.original_publication_month._;
     const year = book.work.original_publication_year._;
     const day = book.work.original_publication_day._;
-    const date = `${months[month - 1]} ${day}th ${year}`;
-    debug(date);
+    let date = `${months[month - 1]} ${day}th ${year}`;
+    if (day === undefined || month === undefined) {
+      if (year === undefined) {
+        date = 'Unknown';
+      } else {
+        date = `${year}`;
+      }
+    }
     review = book.description;
     if (review === '') {
       review = 'There is no available description for this book.';
@@ -190,11 +242,15 @@ app.get('/books/:name', async (req, res) => {
     name = book.title;
     img = largerImage(book.image_url);
     res.render('fullInfo', {
-      title: 'Books-Info', author, isbn, count, date, review, name, img, last10, most3
+      title: 'Books-Info', author, isbn, pages, date, review, name, img, last10, most3
     });
   }
 });
 
+/*
+This endpoint is responsible for dealing with invalid requests, by serving to the user
+a page with an error message.
+*/
 app.get('*', (req, res) => {
   // const name = req.url;
   const last10 = searches.slice(0, 10);
@@ -205,6 +261,10 @@ app.get('*', (req, res) => {
   });
 });
 
+/*
+Sets the server to listen to the port we initialized above,
+a success massage appears in the terminal.
+*/
 app.listen(port, () => {
   debug(`listening on port ${port}`);
 });
