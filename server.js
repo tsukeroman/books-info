@@ -13,7 +13,8 @@ const xml2js = require('xml2js');
 
 const app = express();
 const port = process.env.PORT || 4000;
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
+  connectionLimit: 10,
   host: 'localhost',
   user: 'root',
   password: 'root',
@@ -33,10 +34,12 @@ app.use('/js', express.static(path.join(__dirname, '/node_modules/jquery/dist'))
 app.set('views', './src/views');
 app.set('view engine', 'ejs');
 
+/*
 connection.connect((err) => {
   if (err) throw err;
   debug('Connected!');
 });
+*/
 
 /*
 This function fetches the book's object with all the information that we need about
