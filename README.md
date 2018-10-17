@@ -48,4 +48,4 @@ This is a development version of the app. In order to deploy it, I followed thes
 - I added "engines" field to server's package.json, so the deployment platform will know what versions of NPM and Node to use.
 - I added a Procfile to the root of the app, Heroku needs it.
 - I added ClearDB MySQL addon to the resources of the app in Heroku, and I've replaced connection details with the new details that I got from ClearDB (there is a documentation about how to get these details).
-- I replaced MySQL 'createConnection' method with 'createPull' (both on the deployment and the development versions), since pull can support multiple connections at the same time, while connection crashed everytime.
+- I replaced MySQL 'createConnection' method with 'createPool' (both on the deployment and the development versions), since pool can support multiple connections at the same time, while connection crashed everytime.
